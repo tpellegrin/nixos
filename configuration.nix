@@ -4,7 +4,7 @@
 
 { config, pkgs, ... }:
 let
-  home-manager = builtins.fetchTarball "https://github.com/nix-community/home-manager/archive/release-23.11.tar.gz";
+  home-manager = builtins.fetchTarball "https://github.com/nix-community/home-manager/archive/release-24.05.tar.gz";
   unstable = import
     (builtins.fetchTarball https://github.com/nixos/nixpkgs/tarball/nixos-unstable)
     # reuse the current configuration
@@ -25,7 +25,7 @@ in
     };
 
     /* The home.stateVersion option does not have a default and must be set */
-    home.stateVersion = "23.11";
+    home.stateVersion = "24.05";
     /* Here goes the rest of your home-manager config, e.g. home.packages = [ pkgs.foo ]; */
     programs.vscode = {
         enable = true;
@@ -106,11 +106,14 @@ in
 
   # Configure keymap in X11
   services.xserver = {
-    layout = "br";
-    xkbVariant = "";
+    xkb = {
+      layout = "br";
+      variant = "";
+    };
   };
 
   # Enable Nvidia drivers
+  hardware.nvidia.modesetting.enable = true;
   hardware.nvidia.package = config.boot.kernelPackages.nvidiaPackages.stable;
   services.xserver.videoDrivers = [ "nvidia" ];
 
@@ -153,7 +156,7 @@ in
   };
 
   # Enable automatic login for the user.
-  services.xserver.displayManager.autoLogin = {
+  services.displayManager.autoLogin = {
     enable = true;
     user = "thiago";
   };
