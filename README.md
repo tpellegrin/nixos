@@ -18,4 +18,26 @@ This repository contains my personal NixOS configuration files. I use NixOS as m
 To apply the configuration, run:
 
 ```bash
-sudo nixos-rebuild switch
+# sudo nixos-rebuild switch
+```
+
+### Upgrading the System
+
+#### Switch to the desired NixOS channel (e.g., nixos-24.05):
+
+```bash
+# sudo nix-channel --add https://channels.nixos.org/nixos-24.05 nixos
+```
+
+#### Upgrade:
+
+```bash
+# sudo nixos-rebuild switch --upgrade
+```
+
+#### Reboot (if necessary):
+
+```bash
+# sudo reboot
+```
+
