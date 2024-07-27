@@ -138,7 +138,15 @@
       thiago = {
         description = "Thiago Pellegrin";
         isNormalUser = true;
-        extraGroups = [ "networkmanager" "wheel" "docker" "libvirtd" "qemu-libvirtd" "kvm" ];
+        extraGroups = [ 
+          "corectrl"
+          "docker"
+          "networkmanager"
+          "libvirtd"
+          "qemu-libvirtd"
+          "kvm"
+          "wheel"
+        ];
         shell = pkgs.zsh; # ZSH 1/2.
       };
     };
@@ -189,6 +197,13 @@
   };
 
   programs = {
+    corectrl = {
+      enable = true;
+      gpuOverclock = {
+        enable = true;
+        ppfeaturemask = "0xffffffff"; 
+      };
+    };
     # ZSH 2/2.
     zsh = {
       enable = true;
