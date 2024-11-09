@@ -6,10 +6,6 @@
   pkgs,
   ...
 }: {
-  imports = [
-    ./hardware-configuration.nix
-  ];
-
   nix = let
     flakeInputs = lib.filterAttrs (_: lib.isType "flake") inputs;
   in {
@@ -18,14 +14,15 @@
       flake-registry = ""; # Disable Global Registry.
       nix-path = config.nix.nixPath; # Workaround for broken NIX_PATH [https://github.com/NixOS/nix/issues/9574].
     };
+  
     channel.enable = false; # Disable Channels.
+
     # Make flake registry and nix path match flake inputs.
     registry = lib.mapAttrs (_: flake: {inherit flake;}) flakeInputs;
     nixPath = lib.mapAttrsToList (n: _: "${n}=flake:${n}") flakeInputs;
   };
 
   boot = {
-    # Bootloader.
     loader = {
       systemd-boot.enable = true;
       efi.canTouchEfiVariables = true;
@@ -35,38 +32,28 @@
   };
 
   hardware = {
-    # NVidia 1/2.
-    nvidia = {
-      modesetting.enable = true;
-      package = config.boot.kernelPackages.nvidiaPackages.stable;
+    opengl = {
+      enable = true;
+      driSupport32Bit = true;
+      extraPackages = with pkgs; [ vulkan-tools ];
     };
-    opengl.enable = true;
-    pulseaudio.enable = false; # Pipewire 1/3.
+
+    pulseaudio.enable = false; # Handled by Pipewire in services.nix.
   };
 
-  sound = {
-    enable = true;
-  };
-
-  security = {
-    rtkit.enable = true; # Pipewire 2/3.
+  security = {  
+    rtkit.enable = true; # Pipewire-related.
   };
 
   networking = {
     hostName = "nixos";
     networkmanager.enable = true;
-    #wireless.enable = true;  # Enable wireless support via wpa_supplicant.
-    proxy = {
-      #default = "http://user:password@proxy:port/";
-      #noProxy = "127.0.0.1,localhost,internal.domain";
-    };
   };
 
   time = {
     timeZone = "America/Sao_Paulo"; # Local time zone.
   };
 
-  # Select internationalisation properties.
   i18n.defaultLocale = "en_US.UTF-8";
   i18n.extraLocaleSettings = {
     LC_ADDRESS = "pt_BR.UTF-8";
@@ -79,59 +66,6 @@
     LC_TELEPHONE = "pt_BR.UTF-8";
     LC_TIME = "pt_BR.UTF-8";
   };
-
-  services = {
-    xserver = {
-      enable = true; # Enable X11 windowing system.
-      # Configure keymap in X11.
-      xkb = {
-        layout = "br";
-        variant = "";
-      };
-      # Enable GNOME Desktop Environment.
-      displayManager = {
-        gdm.enable = true;
-      };
-      desktopManager = {
-        gnome.enable = true;
-      };
-      videoDrivers = [ "nvidia" ]; # NVidia 2/2.
-      # Screen tearing fix.
-      screenSection = ''
-        Option "metamodes" "nvidia-auto-select +0+0 {ForceFullCompositionPipeline=On}"
-        Option "AllowIndirectGLXProtocol" "off"
-        Option "TripleBuffer" "on"
-      '';
-    };
-    printing.enable = true; # Enable CUPS to print documents.
-    # Pipewire 3/3.
-    pipewire = {
-      enable = true;
-      alsa = {
-        enable = true;
-        support32Bit = true;
-      };
-      pulse.enable = true;
-    };
-    flatpak.enable = true; # Flatpak 1/2.
-    spice-vdagentd.enable = true; # Virtualisation 1/3.
-  };
-
-  systemd = {
-    services = {
-      # Flatpak 2/2.
-      configure-flathub-repo = {
-        wantedBy = ["multi-user.target"];
-        path = [ pkgs.flatpak ];
-        script = ''
-          flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
-        '';
-      };
-    };
-  };
-
-  # Configure console keymap.
-  console.keyMap = "br-abnt2";
 
   users = {
     users = {
@@ -147,7 +81,7 @@
           "kvm"
           "wheel"
         ];
-        shell = pkgs.zsh; # ZSH 1/2.
+        shell = pkgs.zsh; # ZSH configuration.
       };
     };
   };
@@ -159,6 +93,7 @@
       outputs.overlays.unstable-packages
       outputs.overlays.stable
     ];
+
     config = {
       allowUnfree = true;
     };
@@ -182,6 +117,7 @@
       win-virtio win-spice
       yarn
       zoom-us zsh
+      xorg.xvfb xvfb-run
     ] ++ (with gnomeExtensions; [
       alphabetical-app-grid appindicator
       blur-my-shell burn-my-windows
@@ -204,7 +140,7 @@
         ppfeaturemask = "0xffffffff"; 
       };
     };
-    # ZSH 2/2.
+
     zsh = {
       enable = true;
       shellAliases = {
@@ -222,30 +158,10 @@
         theme = "robbyrussell";
       };
     };
-    # Virtualisation 2/3.
+
     virt-manager = {
       enable = true;
     };
-    steam = {
-      enable = true;
-      remotePlay.openFirewall = true; # Open ports in the firewall for Steam Remote Play
-      #dedicatedServer.openFirewall = true; # Open ports in the firewall for Source Dedicated Server
-    };
-  };
-
-  # Virtualisation 3/3.
-  virtualisation = {
-    libvirtd = {
-      enable = true;
-      qemu = {
-        swtpm.enable = true;
-        ovmf.enable = true;
-        ovmf.packages = [ pkgs.OVMFFull.fd ];
-      };
-    };
-    spiceUSBRedirection.enable = true;
-    # Development.
-    docker.enable = true;
   };
 
   # https://nixos.wiki/wiki/FAQ/When_do_I_update_stateVersion

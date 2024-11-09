@@ -16,6 +16,7 @@
   in {
     # Custom packages and modifications.
     overlays = import ./overlays { inherit inputs; };
+    
     # NixOS modules.
     nixosModules = import ./modules/nixos;
     # Home Manager modules.
@@ -28,8 +29,14 @@
         specialArgs = { inherit inputs outputs; };
         system = "x86_64-linux";
         modules = [
+          # Hardware configuration file.
+          ./hardware-configuration.nix
           # Main NixOS configuration file.
           ./configuration.nix
+          # Services module.
+          ./services.nix
+          # Gaming module.
+          ./modules/gaming/default.nix
         ];
       };
     };
