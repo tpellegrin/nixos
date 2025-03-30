@@ -13,6 +13,7 @@
       experimental-features = "nix-command flakes"; # Enable Flakes.
       flake-registry = ""; # Disable Global Registry.
       nix-path = config.nix.nixPath; # Workaround for broken NIX_PATH [https://github.com/NixOS/nix/issues/9574].
+      sandbox = "relaxed";
     };
   
     channel.enable = false; # Disable Channels.
