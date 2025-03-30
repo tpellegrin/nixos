@@ -4,7 +4,9 @@
     pkgs = import ../pkgs {
       inherit (final) pkgs;
     };
-  in pkgs;
+  in pkgs // {
+    gnome-shell-extension-pano = final.callPackage ../pkgs/gnome-shell-extension-pano.nix { };
+  };
 
   modifications = final: prev: {
     # example = prev.example.overrideAttrs (oldAttrs: rec {

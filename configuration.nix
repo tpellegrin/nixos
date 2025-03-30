@@ -127,7 +127,7 @@
       firefox-pip-always-on-top
       just-perfection
       nothing-to-say
-      pano
+      gnome-shell-extension-pano
       tray-icons-reloaded
       vitals
     ]);
