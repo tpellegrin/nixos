@@ -116,7 +116,7 @@
       thunderbird teams-for-linux
       virt-manager virt-viewer vscodium
       win-virtio win-spice
-      yarn
+      yarn yarn2nix
       zoom-us zsh
       xorg.xvfb xvfb-run
     ] ++ (with gnomeExtensions; [
