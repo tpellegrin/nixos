@@ -58,7 +58,7 @@
         ];
       };
     in
-    general ++ amdgpu ++ lib.optional (builtins.tryEval pkgs.yuzu-ea).success pkgs.yuzu-ea ++ [ obs ];
+    general ++ amdgpu ++ [ obs ];
 
     nixpkgs.config = {
       allowUnfree = true;
